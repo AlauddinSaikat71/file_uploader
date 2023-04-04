@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  file-uploader:
+    image: upg/file-uploader:0.0.1
+    ports:
+      - 3002:3002

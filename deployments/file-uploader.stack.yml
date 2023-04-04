@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  file-uploader:
+    image: upg/file-uploader:0.0.1
+
+    ports:
+      - target: 3002
+        protocol: tcp
+        published: 3002
+        mode: ingress
+
+    env_file: .env
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 120s
+
+    environment:
+      NODE_ENV: 'production'
+      AUTH_PUBLIC_KEY_PATH: /run/secrets/publickey
+
+    networks:
+      backend:
+        aliases:
+          - files-api
+
+    secrets:
+      - publickey
+
+secrets:
+  publickey:
+    file: ../keys/jwtRS256.key.pub
+
+networks:
+  backend:
+    driver: overlay
+    attachable: true
